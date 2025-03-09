@@ -8,11 +8,11 @@ const extractData = () => {
     document.querySelector('.promoprice')?.textContent ||
     'Add more cases';
 
-  productName.trim();
-  productPrice.trim();
+  productName = productName.trim();
+  productPrice = productPrice.trim();
 
   productPrice = productPrice.replace(/[^\d.,-]/g, '');
-  productPrice = productPrice.replace(/\,/, '.');
+  productPrice = productPrice.replace(/\,/g, '.');
 
   return { productName, productPrice, url: window.location.href };
 };
