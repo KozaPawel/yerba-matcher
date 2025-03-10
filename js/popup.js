@@ -53,16 +53,18 @@ const fetchSimilar = async () => {
   stores.forEach(async (store) => {
     if (!currentPage.url.includes(store.url)) {
       const container = document.createElement('p');
+      const searchUrl = store.searchUrl + searchFor;
 
       try {
-        const response = await fetch(store.searchUrl + searchFor);
+        const response = await fetch(searchUrl);
         const html = await response.text();
 
         const parser = new DOMParser();
         const htmlPage = parser.parseFromString(html, 'text/html');
-        const { productName, productPrice, productUrl, samePage } = getProductData(htmlPage, store);
+        const { productName, productPrice, productUrl } = getProductData(htmlPage, store);
 
-        container.textContent = productName + ' ' + productPrice + ' ' + productUrl;
+        container.textContent =
+          productName + ' ' + productPrice + ' ' + productUrl + '' + searchUrl;
         document.getElementById('productPrice').appendChild(container);
       } catch (error) {
         console.error(error.message);

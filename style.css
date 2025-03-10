@@ -1,0 +1,118 @@
+:root {
+  --primary: #059669;
+  --primary-hover: #047857;
+  --disabled: #e2e8f0;
+  --text: #141414;
+  --border: #cbd5e1;
+  --padding: 0.5rem 0.625rem;
+}
+
+body {
+  font-family: 'Raleway', sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  width: 400px;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+}
+
+button {
+  border: none;
+  font-size: 0.875rem;
+  padding: var(--padding);
+  background-color: var(--primary);
+  color: #fff;
+  font-weight: 700;
+  width: 7.5rem;
+  height: 2.25rem;
+  border-radius: 2px;
+}
+
+input {
+  padding: var(--padding);
+  flex: 1;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+
+button:hover {
+  cursor: pointer;
+  background-color: var(--primary-hover);
+  transition-duration: 100ms;
+  transition-timing-function: ease-in-out;
+}
+
+button:disabled,
+input:disabled {
+  background-color: var(--disabled);
+  cursor: default;
+}
+
+button:disabled svg {
+  color: #64748b !important;
+  fill: #64748b !important;
+}
+
+.text-logo {
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.input-container {
+  display: flex;
+  gap: 0.625rem;
+  justify-content: space-between;
+}
+
+.product-container {
+ display: flex;
+ justify-content: space-between;
+}
+
+.product-store {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.product-name {
+  text-decoration: none;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.product-name:hover {
+  text-decoration: underline;
+  color: var(--primary) !important;
+}
+
+.product-name:visited {
+  color: var(--text)
+}
+
+.product-price {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.price-high {
+ color: #DC2626;
+}
+
+.price-low {
+  color: var(--primary)
+}
+
+#searchButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.75rem;
+}
