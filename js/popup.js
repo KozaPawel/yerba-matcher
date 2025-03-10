@@ -26,30 +26,65 @@ const extractData = () => {
 };
 
 const fetchSimilar = async () => {
+  document.getElementById('productPrice').innerHTML = '';
   let searchFor = nameImput.value;
   searchFor = searchFor.replace(/\ /g, '+');
-  const url = 'https://www.poyerbani.pl/search.php?text=' + searchFor;
 
-  try {
-    const response = await fetch(url);
-    const html = await response.text();
+  const stores = [
+    {
+      name: 'Poyerbani',
+      url: 'https://www.poyerbani.pl/',
+      searchUrl: 'https://www.poyerbani.pl/search.php?text=',
+    },
+    {
+      name: 'MateMundo',
+      url: 'https://www.matemundo.pl/',
+      searchUrl: 'https://www.matemundo.pl/search.php?text=',
+    },
+    {
+      name: 'Dobre Ziele',
+      url: 'https://dobreziele.pl/',
+      searchUrl: 'https://dobreziele.pl/szukaj?k=',
+    },
+  ];
 
-    const parser = new DOMParser();
-    const htmlPage = parser.parseFromString(html, 'text/html');
-    const { productName, productPrice, productUrl } = getProductData(htmlPage);
+  stores.forEach(async (store) => {
+    const container = document.createElement('p');
 
-    document.getElementById('productPrice').textContent =
-      productName + ' ' + productPrice + ' ' + productUrl;
-  } catch (error) {
-    console.error(error.message);
-    // todo: feedback in ui that there was an error
-  }
+    try {
+      const response = await fetch(store.searchUrl + searchFor);
+      const html = await response.text();
+
+      const parser = new DOMParser();
+      const htmlPage = parser.parseFromString(html, 'text/html');
+      const { productName, productPrice, productUrl } = getProductData(htmlPage, store);
+
+      container.textContent = productName + ' ' + productPrice + ' ' + productUrl;
+      document.getElementById('productPrice').appendChild(container);
+    } catch (error) {
+      console.error(error.message);
+      // todo: feedback in ui that there was an error
+    }
+  });
 };
 
-const getProductData = (htmlPage) => {
-  let productPrice = htmlPage.querySelector('strong.price')?.textContent;
-  let productName = htmlPage.querySelector('.product__name')?.textContent;
-  let productUrl = htmlPage.querySelector('a.product__name').getAttribute('href');
+const getProductData = (htmlPage, store) => {
+  let productPrice =
+    htmlPage.querySelector('strong.price')?.textContent ||
+    htmlPage.querySelector('div.shop-item span.price')?.textContent ||
+    'Add more cases';
+  let productName =
+    htmlPage.querySelector('.product__name')?.textContent ||
+    htmlPage.querySelector('div.shop-item a')?.getAttribute('title') ||
+    'Add more cases';
+  let productUrl =
+    htmlPage.querySelector('a.product__name')?.getAttribute('href') ||
+    htmlPage.querySelector('div.shop-item a')?.getAttribute('href') ||
+    'Add more cases';
+
+  if (productUrl.charAt(0) === '/') {
+    productUrl = store.url + productUrl;
+  }
 
   productPrice = productPrice.trim();
   productName = productName.trim();
