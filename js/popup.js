@@ -5,15 +5,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const nameImput = document.getElementById('nameInput');
 const searchButton = document.getElementById('searchButton');
+let currentPage;
 
 const extractData = () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { action: 'extractData' }, (response) => {
       if (response) {
         nameImput.disabled = false;
-        nameImput.value = response.productName;
-
         searchButton.disabled = false;
+
+        nameImput.value = response.productName;
+        currentPage = response;
 
         document.getElementById('productName').textContent = JSON.stringify(response);
         // document.getElementById('productPrice').textContent = response.productPrice;
@@ -49,21 +51,23 @@ const fetchSimilar = async () => {
   ];
 
   stores.forEach(async (store) => {
-    const container = document.createElement('p');
+    if (!currentPage.url.includes(store.url)) {
+      const container = document.createElement('p');
 
-    try {
-      const response = await fetch(store.searchUrl + searchFor);
-      const html = await response.text();
+      try {
+        const response = await fetch(store.searchUrl + searchFor);
+        const html = await response.text();
 
-      const parser = new DOMParser();
-      const htmlPage = parser.parseFromString(html, 'text/html');
-      const { productName, productPrice, productUrl } = getProductData(htmlPage, store);
+        const parser = new DOMParser();
+        const htmlPage = parser.parseFromString(html, 'text/html');
+        const { productName, productPrice, productUrl, samePage } = getProductData(htmlPage, store);
 
-      container.textContent = productName + ' ' + productPrice + ' ' + productUrl;
-      document.getElementById('productPrice').appendChild(container);
-    } catch (error) {
-      console.error(error.message);
-      // todo: feedback in ui that there was an error
+        container.textContent = productName + ' ' + productPrice + ' ' + productUrl;
+        document.getElementById('productPrice').appendChild(container);
+      } catch (error) {
+        console.error(error.message);
+        // todo: feedback in ui that there was an error
+      }
     }
   });
 };
