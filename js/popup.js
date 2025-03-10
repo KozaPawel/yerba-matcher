@@ -16,19 +16,21 @@ const extractData = () => {
 
         nameImput.value = response.productName;
         currentPage = response;
-
-        document.getElementById('productName').textContent = JSON.stringify(response);
-        // document.getElementById('productPrice').textContent = response.productPrice;
-        // document.getElementById('productUrl').textContent = response.url;
       } else {
-        document.getElementById('productName').textContent = 'Error extracting data';
+        const fetchedDiv = document.querySelector('.fetched');
+        const error = document.createElement('p');
+
+        error.className = 'error';
+        error.textContent = 'There was an error while trying to extract the data';
+
+        fetchedDiv.appendChild(error);
       }
     });
   });
 };
 
 const fetchSimilar = async () => {
-  document.getElementById('productPrice').innerHTML = '';
+  // document.querySelector('.fetched').innerHTML = '';
   let searchFor = nameImput.value;
   searchFor = searchFor.replace(/\ /g, '+');
 
@@ -52,7 +54,6 @@ const fetchSimilar = async () => {
 
   stores.forEach(async (store) => {
     if (!currentPage.url.includes(store.url)) {
-      const container = document.createElement('p');
       const searchUrl = store.searchUrl + searchFor;
 
       try {
@@ -61,11 +62,13 @@ const fetchSimilar = async () => {
 
         const parser = new DOMParser();
         const htmlPage = parser.parseFromString(html, 'text/html');
-        const { productName, productPrice, productUrl } = getProductData(htmlPage, store);
+        const product = getProductData(htmlPage, store);
 
-        container.textContent =
-          productName + ' ' + productPrice + ' ' + productUrl + '' + searchUrl;
-        document.getElementById('productPrice').appendChild(container);
+        createProductElement(product);
+
+        // container.textContent =
+        //   productName + ' ' + productPrice + ' ' + productUrl + '' + searchUrl;
+        // document.getElementById('productPrice').appendChild(container);
       } catch (error) {
         console.error(error.message);
         // todo: feedback in ui that there was an error
@@ -103,5 +106,49 @@ const getProductData = (htmlPage, store) => {
     productPrice.substring(0, firstDotIndex + 1) +
     productPrice.substring(firstDotIndex + 1).replace(/\./g, '');
 
-  return { productName, productPrice, productUrl };
+  const product = {
+    storeName: store.name,
+    name: productName,
+    price: productPrice,
+    url: productUrl,
+  };
+
+  return product;
+};
+
+const createProductElement = (item) => {
+  const fetchedDiv = document.querySelector('.fetched');
+
+  const container = document.createElement('div');
+  const infoContainer = document.createElement('div');
+  const productStoreName = document.createElement('p');
+  const productName = document.createElement('h2');
+  const productUrl = document.createElement('a');
+  const productPrice = document.createElement('p');
+  const hr = document.createElement('hr');
+
+  container.className = 'product-container';
+  productStoreName.className = 'product-store-name';
+  productUrl.className = 'product-url';
+  productPrice.className = 'product-price';
+  hr.className = 'h-line';
+
+  if (item.price > currentPage.productPrice) {
+    productPrice.classList.add('price-high');
+  } else {
+    productPrice.classList.add('price-low');
+  }
+
+  productUrl.href = item.url;
+  productUrl.target = '_blank';
+  productUrl.textContent = item.name;
+
+  productStoreName.textContent = item.storeName;
+  productPrice.textContent = item.price;
+
+  productName.appendChild(productUrl);
+  infoContainer.append(productStoreName, productName);
+  container.append(infoContainer, productPrice);
+
+  fetchedDiv.append(container, hr);
 };
