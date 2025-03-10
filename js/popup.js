@@ -25,6 +25,10 @@ const extractData = () => {
 
 const fetchSimilar = async () => {
   document.querySelector('.fetched').innerHTML = '';
+
+  const spinner = document.querySelector('.spinner-container');
+  spinner.style.display = 'flex';
+
   let searchFor = nameImput.value;
   searchFor = searchFor.replace(/\ /g, '+');
 
@@ -46,7 +50,7 @@ const fetchSimilar = async () => {
     },
   ];
 
-  stores.forEach(async (store) => {
+  const promises = stores.map(async (store) => {
     if (!currentPage.url.includes(store.url)) {
       const searchUrl = store.searchUrl + searchFor;
 
@@ -68,6 +72,10 @@ const fetchSimilar = async () => {
         // todo: feedback in ui that there was an error
       }
     }
+  });
+
+  Promise.all(promises).then(() => {
+    spinner.style.display = 'none';
   });
 };
 
