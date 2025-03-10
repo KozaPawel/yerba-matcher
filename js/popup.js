@@ -17,20 +17,14 @@ const extractData = () => {
         nameImput.value = response.productName;
         currentPage = response;
       } else {
-        const fetchedDiv = document.querySelector('.fetched');
-        const error = document.createElement('p');
-
-        error.className = 'error';
-        error.textContent = 'There was an error while trying to extract the data';
-
-        fetchedDiv.appendChild(error);
+        createErrorElement();
       }
     });
   });
 };
 
 const fetchSimilar = async () => {
-  // document.querySelector('.fetched').innerHTML = '';
+  document.querySelector('.fetched').innerHTML = '';
   let searchFor = nameImput.value;
   searchFor = searchFor.replace(/\ /g, '+');
 
@@ -151,4 +145,22 @@ const createProductElement = (item) => {
   container.append(infoContainer, productPrice);
 
   fetchedDiv.append(container, hr);
+};
+
+const createErrorElement = () => {
+  const fetchedDiv = document.querySelector('.fetched');
+
+  const errorContainer = document.createElement('div');
+  const error = document.createElement('h2');
+  const message = document.createElement('p');
+
+  errorContainer.className = 'error-container';
+  error.className = 'error';
+  message.className = 'error-submessage';
+
+  error.textContent = 'There was an error while trying to extract the data.';
+  message.textContent = 'Please refresh and try again or check if you are on supported website.';
+
+  errorContainer.append(error, message);
+  fetchedDiv.appendChild(errorContainer);
 };

@@ -112,6 +112,22 @@ button:disabled svg {
   font-weight: 600;
 }
 
+.error-container {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.error {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.error-submessage { 
+  font-size: 0.875rem;
+}
+
 .price-high, .error {
   color: var(--error);
 }
