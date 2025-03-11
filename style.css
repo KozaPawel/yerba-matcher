@@ -118,7 +118,6 @@ button:disabled svg {
 
 .error-container {
   display: flex;
-  flex: 1;
   flex-direction: column;
   gap: 0.25rem;
 }
@@ -143,7 +142,7 @@ button:disabled svg {
 
 .fetched {
   display: flex;
-  /* flex: 1; */
+  flex: 1;
   flex-direction: column;
   overflow-y: auto;
 }

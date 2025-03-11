@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const nameImput = document.getElementById('nameInput');
 const searchButton = document.getElementById('searchButton');
+const fetchedDiv = document.querySelector('.fetched');
 let currentPage;
 
 const extractData = () => {
@@ -24,7 +25,8 @@ const extractData = () => {
 };
 
 const fetchSimilar = async () => {
-  document.querySelector('.fetched').innerHTML = '';
+  fetchedDiv.innerHTML = '';
+  fetchedDiv.style.display = 'none';
 
   const spinner = document.querySelector('.spinner-container');
   spinner.style.display = 'flex';
@@ -63,10 +65,6 @@ const fetchSimilar = async () => {
         const product = getProductData(htmlPage, store);
 
         createProductElement(product);
-
-        // container.textContent =
-        //   productName + ' ' + productPrice + ' ' + productUrl + '' + searchUrl;
-        // document.getElementById('productPrice').appendChild(container);
       } catch (error) {
         console.error(error.message);
         // todo: feedback in ui that there was an error
@@ -76,6 +74,7 @@ const fetchSimilar = async () => {
 
   Promise.all(promises).then(() => {
     spinner.style.display = 'none';
+    fetchedDiv.style.display = 'flex';
   });
 };
 
@@ -119,8 +118,6 @@ const getProductData = (htmlPage, store) => {
 };
 
 const createProductElement = (item) => {
-  const fetchedDiv = document.querySelector('.fetched');
-
   const container = document.createElement('div');
   const infoContainer = document.createElement('div');
   const productStoreName = document.createElement('p');
@@ -156,7 +153,7 @@ const createProductElement = (item) => {
 };
 
 const createErrorElement = () => {
-  const fetchedDiv = document.querySelector('.fetched');
+  fetchedDiv.innerHTML = ' ';
 
   const errorContainer = document.createElement('div');
   const error = document.createElement('h2');
