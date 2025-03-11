@@ -7,6 +7,7 @@ const nameImput = document.getElementById('nameInput');
 const searchButton = document.getElementById('searchButton');
 const fetchedDiv = document.querySelector('.fetched');
 let currentPage;
+let history = [];
 
 const extractData = () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -52,6 +53,8 @@ const fetchSimilar = async () => {
     },
   ];
 
+  clearHistory();
+
   const promises = stores.map(async (store) => {
     if (!currentPage.url.includes(store.url)) {
       const searchUrl = store.searchUrl + searchFor;
@@ -64,6 +67,7 @@ const fetchSimilar = async () => {
         const htmlPage = parser.parseFromString(html, 'text/html');
         const product = getProductData(htmlPage, store);
 
+        saveHistory(product);
         createProductElement(product);
       } catch (error) {
         console.error(error.message);
@@ -169,3 +173,32 @@ const createErrorElement = () => {
   errorContainer.append(error, message);
   fetchedDiv.appendChild(errorContainer);
 };
+
+const fetchHistory = () => {
+  chrome.storage.sync.get(['history']).then((result) => {
+    if (result.history !== undefined) {
+      history.push(...result.history);
+      console.log(history);
+    }
+  });
+};
+
+const saveHistory = (product) => {
+  chrome.storage.sync.get('history', (result) => {
+    const currentHistory = result.history || [];
+
+    const updated = [...currentHistory, product];
+
+    chrome.storage.sync.set({ history: updated }).then(() => {
+      history.push(product);
+      console.log(result.history);
+    });
+  });
+};
+
+const clearHistory = () => {
+  chrome.storage.sync.clear();
+  history = [];
+};
+
+fetchHistory();
