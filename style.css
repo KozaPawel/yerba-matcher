@@ -1,12 +1,17 @@
 :root {
+  --text: #141414;
   --primary: #059669;
   --primary-hover: #047857;
-  --disabled: #e2e8f0;
-  --text: #141414;
-  --border: #cbd5e1;
-  --error: #dc2626;
+  --error: #DC2626;
+  --border: #CBD5e1;
+  --disabled: #E2E8F0;
   --padding: 0.5rem 0.625rem;
   --border-radius: 2px;
+}
+
+::selection {
+  background: #10B981;
+  color: #FFF;
 }
 
 body {
@@ -26,7 +31,7 @@ button {
   font-size: 0.875rem;
   padding: var(--padding);
   background-color: var(--primary);
-  color: #fff;
+  color: #FFF;
   font-weight: 700;
   width: 7.5rem;
   height: 2.25rem;
@@ -55,8 +60,7 @@ input:disabled {
 }
 
 button:disabled svg {
-  color: #64748b !important;
-  fill: #64748b !important;
+  fill: #64748B;
 }
 
 .text-logo {
@@ -124,11 +128,12 @@ button:disabled svg {
   font-weight: 700;
 }
 
-.error-submessage { 
+.error-submessage {
   font-size: 0.875rem;
 }
 
-.price-high, .error {
+.price-high,
+.error {
   color: var(--error);
 }
 
@@ -155,7 +160,7 @@ button:disabled svg {
   width: 3.75rem;
 }
 
-.spinner-container { 
+.spinner-container {
   display: none;
   justify-content: center;
   align-items: center;

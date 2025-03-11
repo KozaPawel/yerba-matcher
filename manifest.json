@@ -7,6 +7,12 @@
     "default_popup": "popup.html",
     "default_title": "Yerba matcher"
   },
+  "icons": {
+    "16": "assets/extension_icon16.png",
+    "32": "assets/extension_icon32.png",
+    "48": "assets/extension_icon48.png",
+    "128": "assets/extension_icon128.png"
+  },
   "content_scripts": [
     {
       "matches": [
