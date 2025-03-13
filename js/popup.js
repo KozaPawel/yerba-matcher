@@ -1,8 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('extractButton').addEventListener('click', extractData);
-  document.getElementById('searchButton').addEventListener('click', fetchSimilar);
-});
-
 const nameImput = document.getElementById('nameInput');
 const searchButton = document.getElementById('searchButton');
 const fetchedDiv = document.querySelector('.fetched');
@@ -178,7 +173,6 @@ const fetchHistory = () => {
   chrome.storage.sync.get(['history']).then((result) => {
     if (result.history !== undefined) {
       history.push(...result.history);
-      console.log(history);
     }
   });
 };
@@ -191,7 +185,6 @@ const saveHistory = (product) => {
 
     chrome.storage.sync.set({ history: updated }).then(() => {
       history.push(product);
-      console.log(result.history);
     });
   });
 };
@@ -201,4 +194,30 @@ const clearHistory = () => {
   history = [];
 };
 
-fetchHistory();
+const changeTab = (id) => {
+  const tabs = document.getElementsByClassName('tablinks');
+
+  for (let i = 0; i < tabs.length; i++) {
+    tabs[i].id === id ? tabs[i].classList.add('active') : tabs[i].classList.remove('active');
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('extractButton').addEventListener('click', extractData);
+  document.getElementById('searchButton').addEventListener('click', fetchSimilar);
+
+  document.getElementById('showHistory').addEventListener('click', () => {
+    changeTab('showHistory');
+  });
+
+  document.getElementById('showSearch').addEventListener('click', () => {
+    changeTab('showSearch');
+  });
+
+  document.getElementById('showSupported').addEventListener('click', () => {
+    changeTab('showSupported');
+  });
+
+  fetchHistory();
+  document.getElementById('showHistory').click();
+});
