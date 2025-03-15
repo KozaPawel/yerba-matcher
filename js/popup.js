@@ -3,6 +3,7 @@ const searchButton = document.querySelector('#searchButton');
 const contentContainer = document.querySelector('.content-container');
 const searchedContent = document.querySelector('#searchedContent');
 const tabContent = document.querySelectorAll('.tab-content');
+// 0-history, 1-search, 2-about
 const tabLinks = document.querySelectorAll('.tab-links');
 
 const stores = [
@@ -27,6 +28,8 @@ let currentPage;
 let history = [];
 
 const extractPageData = () => {
+  document.querySelector('#showHistory').click();
+
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     chrome.tabs.sendMessage(tabs[0].id, { action: 'extractPageData' }, (response) => {
       if (response) {
@@ -38,7 +41,9 @@ const extractPageData = () => {
         currentPage = response;
       } else {
         tabLinks[1].disabled = true;
-        // createErrorElement();
+        if (!history.length) {
+          document.querySelector('#showAbout').click();
+        }
       }
     });
   });
@@ -55,6 +60,9 @@ const fetchSimilarProducts = async () => {
   searchFor = searchFor.replace(/\ /g, '+');
 
   clearHistory();
+  tabLinks[0].disabled = true;
+  tabLinks[1].disabled = true;
+  tabLinks[2].disabled = true;
 
   const promises = stores.map(async (store) => {
     if (!currentPage.url.includes(store.url)) {
@@ -73,7 +81,7 @@ const fetchSimilarProducts = async () => {
         searchedContent.append(...items);
       } catch (error) {
         console.error(error.message);
-        // todo: feedback in ui that there was an error
+        createErrorElement();
       }
     }
   });
@@ -81,6 +89,9 @@ const fetchSimilarProducts = async () => {
   Promise.all(promises).then(() => {
     spinner.style.display = 'none';
     contentContainer.style.display = 'flex';
+    tabLinks[0].disabled = false;
+    tabLinks[1].disabled = false;
+    tabLinks[2].disabled = false;
   });
 };
 
@@ -169,8 +180,8 @@ const createErrorElement = () => {
   error.className = 'error';
   message.className = 'error-submessage';
 
-  error.textContent = 'There was an error while trying to extract the data.';
-  message.textContent = 'Please refresh and try again or check if you are on supported website.';
+  error.textContent = 'There was an error while trying to fetch data.';
+  message.textContent = 'Please refresh and try again.';
 
   errorContainer.append(error, message);
   contentContainer.appendChild(errorContainer);
@@ -205,10 +216,16 @@ const clearHistory = () => {
 };
 
 const createHistoryElement = (tabIndex) => {
-  history.forEach((element) => {
-    const product = createProductElement(element);
-    tabContent[tabIndex].append(...product);
-  });
+  if (history.length) {
+    history.forEach((element) => {
+      const product = createProductElement(element);
+      tabContent[tabIndex].append(...product);
+    });
+  } else {
+    const p = document.createElement('p');
+    p.innerHTML = "There's nothing to show";
+    tabContent[tabIndex].append(p);
+  }
 };
 
 const createAboutElement = (tabIndex) => {
@@ -281,5 +298,4 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   extractPageData();
-  document.querySelector('#showHistory').click();
 });
