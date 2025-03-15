@@ -74,7 +74,7 @@ const fetchSimilarProducts = async () => {
 
         const parser = new DOMParser();
         const htmlPage = parser.parseFromString(html, 'text/html');
-        const product = getProductData(htmlPage, store);
+        const product = getProductData(htmlPage, store, searchUrl);
 
         saveHistory(product);
         const items = createProductElement(product, true);
@@ -95,19 +95,19 @@ const fetchSimilarProducts = async () => {
   });
 };
 
-const getProductData = (htmlPage, store) => {
+const getProductData = (htmlPage, store, searchUrl) => {
   let productPrice =
     htmlPage.querySelector('strong.price')?.textContent ||
     htmlPage.querySelector('div.shop-item span.price')?.textContent ||
-    'Add more cases';
+    '404';
   let productName =
     htmlPage.querySelector('.product__name')?.textContent ||
     htmlPage.querySelector('div.shop-item a')?.getAttribute('title') ||
-    'Add more cases';
+    '404';
   let productUrl =
     htmlPage.querySelector('a.product__name')?.getAttribute('href') ||
     htmlPage.querySelector('div.shop-item a')?.getAttribute('href') ||
-    'Add more cases';
+    '404';
 
   if (productUrl.charAt(0) === '/') {
     productUrl = store.url + productUrl;
@@ -126,6 +126,7 @@ const getProductData = (htmlPage, store) => {
 
   const product = {
     storeName: store.name,
+    searchUrl: searchUrl,
     name: productName,
     price: productPrice,
     url: productUrl,
@@ -140,6 +141,7 @@ const createProductElement = (item, priceColor) => {
   const productStoreName = document.createElement('p');
   const productName = document.createElement('h2');
   const productUrl = document.createElement('a');
+  const searchUrl = document.createElement('a');
   const productPrice = document.createElement('p');
   const hr = document.createElement('hr');
 
@@ -155,15 +157,24 @@ const createProductElement = (item, priceColor) => {
     productPrice.classList.add('price-low');
   }
 
-  productUrl.href = item.url;
-  productUrl.target = '_blank';
-  productUrl.textContent = item.name;
+  if (item.name === '404' || item.price === '404' || item.url === '404') {
+    productUrl.textContent = 'Product not found';
+  } else {
+    productUrl.href = item.url;
+    productUrl.target = '_blank';
+
+    searchUrl.href = item.searchUrl;
+    searchUrl.target = '_blank';
+
+    productUrl.textContent = item.name;
+    productPrice.textContent = item.price;
+    searchUrl.textContent = 'All results';
+  }
 
   productStoreName.textContent = item.storeName;
-  productPrice.textContent = item.price;
 
   productName.appendChild(productUrl);
-  infoContainer.append(productStoreName, productName);
+  infoContainer.append(productStoreName, productName, searchUrl);
   container.append(infoContainer, productPrice);
 
   return [container, hr];
