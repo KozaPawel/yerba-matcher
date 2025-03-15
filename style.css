@@ -79,12 +79,8 @@ button:disabled svg {
   display: flex;
   justify-content: space-between;
   gap: 0.25rem;
-  padding: 0.25rem;
+  /* padding: 0.25rem; */
   border-radius: var(--border-radius);
-}
-
-.product-container:nth-child(2n) {
-  background-color: var(--disabled);
 }
 
 .product-store-name {
@@ -140,7 +136,7 @@ button:disabled svg {
   color: var(--primary);
 }
 
-.fetched {
+.content-container {
   display: flex;
   flex: 1;
   flex-direction: column;
@@ -197,7 +193,6 @@ button:disabled svg {
   }
 }
 
-/* Style the tab */
 .tab {
   overflow: hidden;
   border: 1px solid #ccc;
@@ -207,7 +202,6 @@ button:disabled svg {
   justify-content: space-between;
 }
 
-/* Style the buttons that are used to open the tab content */
 .tab button {
   background-color: inherit;
   float: left;
@@ -223,16 +217,20 @@ button:disabled svg {
 }
 
 .tab button.active {
-  background-color: red;
+  background-color: lightgrey;
 }
 
 .tab button {
   color: var(--text);
 }
 
-.tabcontent {
-  display: none;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-top: none;
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.tab-content>h2 {
+  font-weight: 700;
+  font-size: 1.25rem;
 }

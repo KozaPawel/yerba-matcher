@@ -17,30 +17,35 @@
     <h1 class="text-logo">Yerba Matcher</h1>
 
     <div class="tab">
-      <button id="showHistory" class="tablinks">History</button>
-      <button id="showSearch" class="tablinks">Search</button>
-      <button id="showSupported" class="tablinks">About</button>
+      <button id="showHistory" class="tab-links">History</button>
+      <button id="showSearch" class="tab-links">Search</button>
+      <button id="showAbout" class="tab-links">About</button>
     </div>
 
-    <button id="extractButton">Get name</button>
-    <div class="input-container">
-      <input id="nameInput" type="text" disabled />
-      <button id="searchButton" disabled>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
-          fill="#ffffff"
-          viewBox="0 0 256 256"
-        >
-          <path
-            d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"
-          ></path>
-        </svg>
-      </button>
+    <div class="content-container">
+      <div class="tab-content"></div>
+      <div class="tab-content">
+        <button id="extractButton">Get name</button>
+        <div class="input-container">
+          <input id="nameInput" type="text" disabled />
+          <button id="searchButton" disabled>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              fill="#ffffff"
+              viewBox="0 0 256 256"
+            >
+              <path
+                d="M232.49,215.51,185,168a92.12,92.12,0,1,0-17,17l47.53,47.54a12,12,0,0,0,17-17ZM44,112a68,68,0,1,1,68,68A68.07,68.07,0,0,1,44,112Z"
+              ></path>
+            </svg>
+          </button>
+        </div>
+        <div id="searchedContent"></div>
+      </div>
+      <div class="tab-content"></div>
     </div>
-
-    <div class="fetched"></div>
     <div class="spinner-container">
       <svg
         xmlns="http://www.w3.org/2000/svg"

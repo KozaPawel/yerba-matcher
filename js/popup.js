@@ -1,12 +1,33 @@
-const nameImput = document.getElementById('nameInput');
-const searchButton = document.getElementById('searchButton');
-const fetchedDiv = document.querySelector('.fetched');
+const nameImput = document.querySelector('#nameInput');
+const searchButton = document.querySelector('#searchButton');
+const contentContainer = document.querySelector('.content-container');
+const searchedContent = document.querySelector('#searchedContent');
+const tabContent = document.querySelectorAll('.tab-content');
+
+const stores = [
+  {
+    name: 'Poyerbani',
+    url: 'https://www.poyerbani.pl/',
+    searchUrl: 'https://www.poyerbani.pl/search.php?text=',
+  },
+  {
+    name: 'MateMundo',
+    url: 'https://www.matemundo.pl/',
+    searchUrl: 'https://www.matemundo.pl/search.php?text=',
+  },
+  {
+    name: 'Dobre Ziele',
+    url: 'https://dobreziele.pl/',
+    searchUrl: 'https://dobreziele.pl/szukaj?k=',
+  },
+];
+
 let currentPage;
 let history = [];
 
-const extractData = () => {
+const extractPageData = () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    chrome.tabs.sendMessage(tabs[0].id, { action: 'extractData' }, (response) => {
+    chrome.tabs.sendMessage(tabs[0].id, { action: 'extractPageData' }, (response) => {
       if (response) {
         nameImput.disabled = false;
         searchButton.disabled = false;
@@ -20,33 +41,15 @@ const extractData = () => {
   });
 };
 
-const fetchSimilar = async () => {
-  fetchedDiv.innerHTML = '';
-  fetchedDiv.style.display = 'none';
+const fetchSimilarProducts = async () => {
+  searchedContent.innerHTML = '';
+  contentContainer.style.display = 'none';
 
   const spinner = document.querySelector('.spinner-container');
   spinner.style.display = 'flex';
 
   let searchFor = nameImput.value;
   searchFor = searchFor.replace(/\ /g, '+');
-
-  const stores = [
-    {
-      name: 'Poyerbani',
-      url: 'https://www.poyerbani.pl/',
-      searchUrl: 'https://www.poyerbani.pl/search.php?text=',
-    },
-    {
-      name: 'MateMundo',
-      url: 'https://www.matemundo.pl/',
-      searchUrl: 'https://www.matemundo.pl/search.php?text=',
-    },
-    {
-      name: 'Dobre Ziele',
-      url: 'https://dobreziele.pl/',
-      searchUrl: 'https://dobreziele.pl/szukaj?k=',
-    },
-  ];
 
   clearHistory();
 
@@ -63,7 +66,8 @@ const fetchSimilar = async () => {
         const product = getProductData(htmlPage, store);
 
         saveHistory(product);
-        createProductElement(product);
+        const items = createProductElement(product, true);
+        searchedContent.append(...items);
       } catch (error) {
         console.error(error.message);
         // todo: feedback in ui that there was an error
@@ -73,7 +77,7 @@ const fetchSimilar = async () => {
 
   Promise.all(promises).then(() => {
     spinner.style.display = 'none';
-    fetchedDiv.style.display = 'flex';
+    contentContainer.style.display = 'flex';
   });
 };
 
@@ -116,7 +120,7 @@ const getProductData = (htmlPage, store) => {
   return product;
 };
 
-const createProductElement = (item) => {
+const createProductElement = (item, priceColor) => {
   const container = document.createElement('div');
   const infoContainer = document.createElement('div');
   const productStoreName = document.createElement('p');
@@ -131,9 +135,9 @@ const createProductElement = (item) => {
   productPrice.className = 'product-price';
   hr.className = 'h-line';
 
-  if (item.price > currentPage.productPrice) {
+  if (item.price > currentPage?.productPrice && priceColor) {
     productPrice.classList.add('price-high');
-  } else {
+  } else if (item.price < currentPage?.productPrice && priceColor) {
     productPrice.classList.add('price-low');
   }
 
@@ -148,11 +152,11 @@ const createProductElement = (item) => {
   infoContainer.append(productStoreName, productName);
   container.append(infoContainer, productPrice);
 
-  fetchedDiv.append(container, hr);
+  return [container, hr];
 };
 
 const createErrorElement = () => {
-  fetchedDiv.innerHTML = ' ';
+  contentContainer.innerHTML = ' ';
 
   const errorContainer = document.createElement('div');
   const error = document.createElement('h2');
@@ -166,14 +170,17 @@ const createErrorElement = () => {
   message.textContent = 'Please refresh and try again or check if you are on supported website.';
 
   errorContainer.append(error, message);
-  fetchedDiv.appendChild(errorContainer);
+  contentContainer.appendChild(errorContainer);
 };
 
-const fetchHistory = () => {
+const fetchHistory = (callback) => {
+  history = [];
+
   chrome.storage.sync.get(['history']).then((result) => {
     if (result.history !== undefined) {
       history.push(...result.history);
     }
+    callback();
   });
 };
 
@@ -194,30 +201,84 @@ const clearHistory = () => {
   history = [];
 };
 
+const createHistoryElement = (tabIndex) => {
+  history.forEach((element) => {
+    const product = createProductElement(element);
+    tabContent[tabIndex].append(...product);
+  });
+};
+
+const createAboutElement = (tabIndex) => {
+  tabContent[tabIndex].innerHTML = '';
+
+  const topText = document.createElement('h2');
+  topText.textContent = 'Supported stores:';
+  const list = document.createElement('ul');
+
+  stores.forEach((store) => {
+    const listItem = document.createElement('li');
+    const link = document.createElement('a');
+
+    link.href = store.url;
+    link.target = '_blank';
+    link.textContent = store.name;
+
+    listItem.append(link);
+    list.append(listItem);
+  });
+
+  tabContent[tabIndex].append(topText, list);
+};
+
 const changeTab = (id) => {
-  const tabs = document.getElementsByClassName('tablinks');
+  searchedContent.innerHTML = '';
+
+  const tabs = document.querySelectorAll('.tab-links');
+  let currentTabIndex;
 
   for (let i = 0; i < tabs.length; i++) {
-    tabs[i].id === id ? tabs[i].classList.add('active') : tabs[i].classList.remove('active');
+    if (tabs[i].id === id) {
+      tabs[i].classList.add('active');
+      tabContent[i].style.display = 'flex';
+      currentTabIndex = i;
+    } else {
+      tabs[i].classList.remove('active');
+      tabContent[i].style.display = 'none';
+    }
+  }
+
+  switch (id) {
+    case 'showSearch':
+      fetchSimilarProducts();
+      break;
+    case 'showHistory':
+      tabContent[currentTabIndex].innerHTML = `<h2>Last search</h2>`;
+      fetchHistory(() => {
+        createHistoryElement(currentTabIndex);
+      });
+      break;
+    case 'showAbout':
+      createAboutElement(currentTabIndex);
+      break;
   }
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('extractButton').addEventListener('click', extractData);
-  document.getElementById('searchButton').addEventListener('click', fetchSimilar);
+  document.querySelector('#extractButton').addEventListener('click', extractPageData);
+  document.querySelector('#searchButton').addEventListener('click', fetchSimilarProducts);
 
-  document.getElementById('showHistory').addEventListener('click', () => {
+  document.querySelector('#showHistory').addEventListener('click', () => {
     changeTab('showHistory');
   });
 
-  document.getElementById('showSearch').addEventListener('click', () => {
+  document.querySelector('#showSearch').addEventListener('click', () => {
     changeTab('showSearch');
   });
 
-  document.getElementById('showSupported').addEventListener('click', () => {
-    changeTab('showSupported');
+  document.querySelector('#showAbout').addEventListener('click', () => {
+    changeTab('showAbout');
   });
 
-  fetchHistory();
-  document.getElementById('showHistory').click();
+  extractPageData();
+  document.querySelector('#showHistory').click();
 });

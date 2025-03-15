@@ -1,4 +1,4 @@
-const extractData = () => {
+const extractPageData = () => {
   let productName =
     document.querySelector('.product_name__name')?.textContent ||
     document.querySelector('div h1')?.textContent ||
@@ -19,9 +19,9 @@ const extractData = () => {
 
 // Listen for messages from popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-  if (message.action === 'extractData') {
+  if (message.action === 'extractPageData') {
     // Send data to popup when requested
-    const data = extractData();
+    const data = extractPageData();
     sendResponse(data);
   }
 });
