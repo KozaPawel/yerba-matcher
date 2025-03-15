@@ -3,6 +3,7 @@ const searchButton = document.querySelector('#searchButton');
 const contentContainer = document.querySelector('.content-container');
 const searchedContent = document.querySelector('#searchedContent');
 const tabContent = document.querySelectorAll('.tab-content');
+const tabLinks = document.querySelectorAll('.tab-links');
 
 const stores = [
   {
@@ -31,11 +32,13 @@ const extractPageData = () => {
       if (response) {
         nameImput.disabled = false;
         searchButton.disabled = false;
+        tabLinks[1].disabled = false;
 
         nameImput.value = response.productName;
         currentPage = response;
       } else {
-        createErrorElement();
+        tabLinks[1].disabled = true;
+        // createErrorElement();
       }
     });
   });
@@ -232,17 +235,15 @@ const createAboutElement = (tabIndex) => {
 
 const changeTab = (id) => {
   searchedContent.innerHTML = '';
-
-  const tabs = document.querySelectorAll('.tab-links');
   let currentTabIndex;
 
-  for (let i = 0; i < tabs.length; i++) {
-    if (tabs[i].id === id) {
-      tabs[i].classList.add('active');
+  for (let i = 0; i < tabLinks.length; i++) {
+    if (tabLinks[i].id === id) {
+      tabLinks[i].classList.add('active');
       tabContent[i].style.display = 'flex';
       currentTabIndex = i;
     } else {
-      tabs[i].classList.remove('active');
+      tabLinks[i].classList.remove('active');
       tabContent[i].style.display = 'none';
     }
   }
