@@ -149,6 +149,8 @@ const createProductElement = (item, priceColor) => {
   productStoreName.className = 'product-store-name';
   productUrl.className = 'product-url';
   productPrice.className = 'product-price';
+  searchUrl.className = 'search-url';
+  infoContainer.className = 'info-container';
   hr.className = 'h-line';
 
   if (item.price > currentPage?.productPrice && priceColor) {
@@ -243,8 +245,14 @@ const createAboutElement = (tabIndex) => {
   tabContent[tabIndex].innerHTML = '';
 
   const topText = document.createElement('h2');
-  topText.textContent = 'Supported stores:';
+  const bottomText = document.createElement('p');
   const list = document.createElement('ul');
+
+  topText.textContent = 'Supported stores:';
+  bottomText.textContent =
+    'Yerba Matcher is a simple price comparison tool that searches for the current yerba mate product name across supported stores and displays first result from each store.';
+
+  bottomText.className = 'about-bottom-text';
 
   stores.forEach((store) => {
     const listItem = document.createElement('li');
@@ -253,12 +261,13 @@ const createAboutElement = (tabIndex) => {
     link.href = store.url;
     link.target = '_blank';
     link.textContent = store.name;
+    link.className = 'about-store-name';
 
     listItem.append(link);
     list.append(listItem);
   });
 
-  tabContent[tabIndex].append(topText, list);
+  tabContent[tabIndex].append(topText, list, bottomText);
 };
 
 const changeTab = (id) => {
@@ -292,9 +301,25 @@ const changeTab = (id) => {
   }
 };
 
+const changeInputVisibility = () => {
+  const inputContainer = document.querySelector('.input-container');
+  const carets = document.querySelectorAll('.caret');
+  const displayStyle = window.getComputedStyle(inputContainer).display;
+
+  if (displayStyle === 'flex') {
+    inputContainer.style.display = 'none';
+    carets[0].style.display = 'block';
+    carets[1].style.display = 'none';
+  } else {
+    inputContainer.style.display = 'flex';
+    carets[0].style.display = 'none';
+    carets[1].style.display = 'block';
+  }
+};
+
 document.addEventListener('DOMContentLoaded', () => {
-  document.querySelector('#extractButton').addEventListener('click', extractPageData);
   document.querySelector('#searchButton').addEventListener('click', fetchSimilarProducts);
+  document.querySelector('#editButton').addEventListener('click', changeInputVisibility);
 
   document.querySelector('#showHistory').addEventListener('click', () => {
     changeTab('showHistory');
