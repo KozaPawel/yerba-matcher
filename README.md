@@ -9,6 +9,10 @@ Yerba Matcher is a simple price comparison tool that searches for the current ye
 
 ## Screenshots
 
+<img src="https://github.com/user-attachments/assets/f6881ea6-9d1d-4a8d-9006-142b3d89cd43" alt="extension-screenshot1" width="520">
+
+<img src="https://github.com/user-attachments/assets/33574bfc-ee7b-4490-9dda-ccc86552b3e6" alt="extension-screenshot2" width="400">
+
 ## Install
 
 > [!NOTE]  
